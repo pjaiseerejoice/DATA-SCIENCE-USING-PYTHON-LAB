@@ -1,0 +1,95 @@
+[
+  {
+    "_id": 1,
+    "name": "Ajay",
+    "age": 45,
+    "city": "Chennai",
+    "visits": [
+      {
+        "dept": "Cardiology",
+        "date": "2026-01-05",
+        "fee": 800.0
+      },
+      {
+        "dept": "Internal Medicine",
+        "date": "2026-01-15",
+        "fee": 300.0
+      }
+    ]
+  },
+  {
+    "_id": 2,
+    "name": "Bhavana",
+    "age": 32,
+    "city": "Madurai",
+    "visits": [
+      {
+        "dept": "Orthopaedics",
+        "date": "2026-01-06",
+        "fee": 600.0
+      },
+      {
+        "dept": "Orthopaedics",
+        "date": "2026-01-22",
+        "fee": 600.0
+      }
+    ]
+  },
+  {
+    "_id": 3,
+    "name": "Charles",
+    "age": 67,
+    "city": "Chennai",
+    "visits": [
+      {
+        "dept": "Cardiology",
+        "date": "2026-01-08",
+        "fee": 800.0
+      },
+      {
+        "dept": "Internal Medicine",
+        "date": "2026-01-20",
+        "fee": 300.0
+      }
+    ]
+  },
+  {
+    "_id": 4,
+    "name": "Deepa",
+    "age": 29,
+    "city": "Coimbatore",
+    "visits": [
+      {
+        "dept": "Internal Medicine",
+        "date": "2026-01-09",
+        "fee": 300.0
+      }
+    ]
+  },
+  {
+    "_id": 5,
+    "name": "Elango",
+    "age": 54,
+    "city": "Madurai",
+    "visits": [
+      {
+        "dept": "Cardiology",
+        "date": "2026-01-12",
+        "fee": 800.0
+      }
+    ]
+  },
+  {
+    "_id": 6,
+    "name": "Fathima",
+    "age": 38,
+    "city": "Chennai",
+    "visits": [
+      {
+        "dept": "Orthopaedics",
+        "date": "2026-01-18",
+        "fee": 600.0
+      }
+    ]
+  }
+]
