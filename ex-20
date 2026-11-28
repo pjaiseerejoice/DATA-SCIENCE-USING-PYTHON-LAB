@@ -1,0 +1,225 @@
+
+import networkx as nx
+import matplotlib.pyplot as plt
+
+print("Network Visualization: Undirected and Directed Graphs")
+print("=" * 54)
+
+# ---------- Part A: Undirected Graph - Research Collaboration Network ----------
+
+G = nx.Graph()
+
+collaborations = [
+    ("Asha", "Bharath"),
+    ("Asha", "Charu"),
+    ("Bharath", "Charu"),
+    ("Charu", "Deva"),
+    ("Deva", "Eswar"),
+    ("Deva", "Fiona"),
+    ("Eswar", "Fiona"),
+    ("Fiona", "Gautam"),
+    ("Gautam", "Hema"),
+    ("Hema", "Irfan"),
+    ("Gautam", "Irfan"),
+    ("Charu", "Fiona"),
+]
+
+G.add_edges_from(collaborations)
+
+print("\nPart A - Undirected collaboration network")
+print("Nodes:", G.number_of_nodes(), "| Edges:", G.number_of_edges())
+
+print(
+    "Density:", round(nx.density(G), 3),
+    "| Connected:", nx.is_connected(G)
+)
+
+deg = dict(G.degree())
+btw = nx.betweenness_centrality(G)
+
+print(f"{'Researcher':<10}{'Degree':>7}{'Betweenness':>13}")
+
+for n in sorted(G, key=lambda n: -btw[n]):
+    print(f"{n:<10}{deg[n]:>7}{btw[n]:>13.3f}")
+
+print(
+    "Shortest path Asha -> Irfan:",
+    " - ".join(nx.shortest_path(G, "Asha", "Irfan"))
+)
+
+communities = nx.algorithms.community.greedy_modularity_communities(G)
+
+print("Communities:", [sorted(c) for c in communities])
+
+
+# ---------- Part B: Directed Weighted Graph - Flight Routes ----------
+
+D = nx.DiGraph()
+
+routes = [
+    ("Chennai", "Delhi", 1760),
+    ("Delhi", "Chennai", 1760),
+    ("Chennai", "Mumbai", 1030),
+    ("Mumbai", "Delhi", 1150),
+    ("Delhi", "Kolkata", 1300),
+    ("Kolkata", "Guwahati", 520),
+    ("Mumbai", "Bengaluru", 840),
+    ("Bengaluru", "Chennai", 290),
+    ("Bengaluru", "Kolkata", 1560),
+    ("Hyderabad", "Bengaluru", 500),
+    ("Chennai", "Hyderabad", 520),
+    ("Kolkata", "Delhi", 1300),
+]
+
+D.add_weighted_edges_from(routes, weight="km")
+
+print("\nPart B - Directed flight network")
+
+print(
+    "Airports:", D.number_of_nodes(),
+    "| Routes:", D.number_of_edges()
+)
+
+print(f"{'Airport':<10}{'In':>4}{'Out':>5}{'PageRank':>10}")
+
+pr = nx.pagerank(D)
+
+for n in sorted(D, key=lambda n: -pr[n]):
+    print(
+        f"{n:<10}{D.in_degree(n):>4}"
+        f"{D.out_degree(n):>5}{pr[n]:>10.3f}"
+    )
+
+path = nx.dijkstra_path(
+    D,
+    "Hyderabad",
+    "Guwahati",
+    weight="km"
+)
+
+dist = nx.dijkstra_path_length(
+    D,
+    "Hyderabad",
+    "Guwahati",
+    weight="km"
+)
+
+print(
+    "Shortest route Hyderabad -> Guwahati:",
+    " -> ".join(path),
+    f"({dist} km)"
+)
+
+print(
+    "Can Guwahati reach any city?",
+    D.out_degree("Guwahati") > 0
+)
+
+print("Strongly connected:", nx.is_strongly_connected(D))
+
+
+# ---------- Drawing Both Graphs ----------
+
+fig, ax = plt.subplots(1, 2, figsize=(14, 6))
+
+# Undirected graph layout
+pos = nx.spring_layout(G, seed=4)
+
+colors = ["#4e79a7", "#f28e2b", "#59a14f", "#e15759"]
+
+node_color = [
+    colors[i]
+    for n in G
+    for i, c in enumerate(communities)
+    if n in c
+]
+
+nx.draw_networkx(
+    G,
+    pos,
+    ax=ax[0],
+    node_color=node_color,
+    node_size=[300 + 3000 * btw[n] for n in G],
+    font_size=9,
+    font_color="white",
+    edge_color="gray",
+    width=1.5,
+)
+
+ax[0].set_title(
+    "Undirected: Collaboration Network\n"
+    "(colour = community, size = betweenness)"
+)
+
+ax[0].axis("off")
+
+
+# Directed graph layout
+pos2 = nx.circular_layout(D)
+
+nx.draw_networkx_nodes(
+    D,
+    pos2,
+    ax=ax[1],
+    node_color="#edc948",
+    node_size=[3000 * pr[n] + 400 for n in D],
+)
+
+nx.draw_networkx_labels(
+    D,
+    pos2,
+    ax=ax[1],
+    font_size=8
+)
+
+nx.draw_networkx_edges(
+    D,
+    pos2,
+    ax=ax[1],
+    arrowstyle="-|>",
+    arrowsize=15,
+    connectionstyle="arc3,rad=0.12",
+    edge_color="gray",
+    node_size=1200,
+)
+
+# Highlight shortest path in red
+path_edges = list(zip(path, path[1:]))
+
+nx.draw_networkx_edges(
+    D,
+    pos2,
+    ax=ax[1],
+    edgelist=path_edges,
+    edge_color="red",
+    width=2.5,
+    arrowstyle="-|>",
+    arrowsize=18,
+    connectionstyle="arc3,rad=0.12",
+    node_size=1200,
+)
+
+# Display edge weights
+nx.draw_networkx_edge_labels(
+    D,
+    pos2,
+    ax=ax[1],
+    font_size=7,
+    label_pos=0.35,
+    edge_labels=nx.get_edge_attributes(D, "km"),
+)
+
+ax[1].set_title(
+    "Directed: Flight Routes "
+    "(red = shortest Hyderabad -> Guwahati)"
+)
+
+ax[1].axis("off")
+
+plt.tight_layout()
+
+plt.savefig("exp20_graphs.png", dpi=150)
+
+plt.show()
+
+print("\nSaved figure: exp20_graphs.png")
